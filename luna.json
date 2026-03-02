@@ -1,0 +1,49 @@
+{
+  "name": "luna-runtime",
+  "version": "0.1.0",
+  "description": "LUNA – Universal JavaScript Operating Runtime",
+  "entry": "src/index.js",
+  "platform": {
+    "backend": true,
+    "web": true,
+    "mobile": {
+      "android": true,
+      "ios": true
+    },
+    "desktop": {
+      "windows": true,
+      "macos": true,
+      "linux": true
+    },
+    "edge": true
+  },
+  "runtime": {
+    "scheduler": {
+      "workerThreads": 4,
+      "ioThreads": 2
+    },
+    "sandbox": {
+      "enabled": true,
+      "capabilities": ["fs", "net", "env"]
+    },
+    "optimizer": {
+      "selfEvolving": true,
+      "hotPathThreshold": 100
+    }
+  },
+  "rendering": {
+    "strategy": "server-first",
+    "hydration": "incremental",
+    "ssr": true,
+    "ssg": true,
+    "isr": true,
+    "edgeRendering": true
+  },
+  "module": {
+    "resolution": "luna",
+    "caching": true,
+    "circularHandling": "lazy"
+  },
+  "registry": "https://registry.luna.dev",
+  "lockfile": "luna-lock.json"
+}

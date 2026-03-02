@@ -1,0 +1,32 @@
+{
+  "name": "@luna/runtime",
+  "version": "0.1.0",
+  "description": "LUNA – Universal JavaScript Operating Runtime",
+  "main": "src/index.js",
+  "bin": {
+    "luna": "./bin/luna.js"
+  },
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "node --test tests/index.test.js",
+    "build": "node src/build/builder.js",
+    "lint": "echo \"No linter configured yet\""
+  },
+  "keywords": [
+    "runtime",
+    "javascript",
+    "framework",
+    "universal",
+    "ssr",
+    "edge",
+    "mobile",
+    "desktop"
+  ],
+  "author": "LUNA Contributors",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}

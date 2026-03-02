@@ -1,0 +1,11 @@
+node_modules/
+dist/
+build/
+.luna-cache/
+*.log
+.env
+.DS_Store
+Thumbs.db
+coverage/
+luna-lock.json
+*.tgz
