@@ -28,7 +28,7 @@ const { EdgeRuntime } = require('./edge/runtime');
 const { ModuleResolver } = require('./module/resolver');
 const { PackageManager } = require('./lpm/manager');
 const { BuildSystem } = require('./build/builder');
-const { RuntimeOptimizer } = require('./optimizer/self-evolving');
+const { SelfEvolvingOptimizer: RuntimeOptimizer } = require('./optimizer/self-evolving');
 const { UniversalCodeContinuity } = require('./ucc/continuity');
 const { QuantumStateRenderer } = require('./qsr/quantum-state');
 

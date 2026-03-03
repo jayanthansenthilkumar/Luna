@@ -257,7 +257,11 @@ class ModuleResolver extends EventEmitter {
       if (filePath) return { type: 'file', id: filePath, path: filePath };
     }
 
-    // 5. Node modules resolution
+    // 5. Luna packages resolution (luna_packages/)
+    const lunaResolved = this._resolveLunaPackage(specifier, fromPath);
+    if (lunaResolved) return { type: 'luna_package', id: specifier, path: lunaResolved };
+
+    // 6. Node modules resolution
     const nodeResolved = this._resolveNodeModule(specifier, fromPath);
     if (nodeResolved) return { type: 'node', id: specifier, path: nodeResolved };
 
@@ -410,6 +414,47 @@ class ModuleResolver extends EventEmitter {
         const mainPath = path.join(dir, 'node_modules', specifier, main);
         const mainResolved = this._resolveFile(mainPath);
         if (mainResolved) return mainResolved;
+      }
+
+      const parent = path.dirname(dir);
+      if (parent === dir) break;
+      dir = parent;
+    }
+
+    return null;
+  }
+
+  /**
+   * Resolve a package from luna_packages/ directory.
+   * Walks up the directory tree looking for luna_packages/<specifier>.
+   * Checks luna.json "entry" field or defaults to index.js.
+   */
+  _resolveLunaPackage(specifier, fromPath) {
+    let dir = path.dirname(fromPath);
+
+    while (true) {
+      // luna_packages/<specifier> (handles @scope/pkg via path join)
+      const pkgDir = path.join(dir, 'luna_packages', ...specifier.split('/'));
+
+      if (fs.existsSync(pkgDir) && fs.statSync(pkgDir).isDirectory()) {
+        // Check luna.json for entry point
+        const lunaJsonPath = path.join(pkgDir, 'luna.json');
+        if (fs.existsSync(lunaJsonPath)) {
+          try {
+            const manifest = JSON.parse(fs.readFileSync(lunaJsonPath, 'utf-8'));
+            const entry = manifest.entry || 'index.js';
+            const entryPath = path.join(pkgDir, entry);
+            const resolved = this._resolveFile(entryPath);
+            if (resolved) return resolved;
+          } catch { /* fall through */ }
+        }
+
+        // Fallback: try index.js or direct file resolution
+        const resolved = this._resolveFile(pkgDir);
+        if (resolved) return resolved;
+
+        const indexPath = path.join(pkgDir, 'index.js');
+        if (fs.existsSync(indexPath)) return indexPath;
       }
 
       const parent = path.dirname(dir);
