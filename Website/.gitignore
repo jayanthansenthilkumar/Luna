@@ -1,0 +1,18 @@
+# Dependencies
+node_modules/
+luna_packages/
+
+# Build output
+dist/
+.luna-cache/
+
+# Environment
+.env
+.env.local
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db

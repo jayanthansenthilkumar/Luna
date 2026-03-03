@@ -1,0 +1,17 @@
+{
+  "name": "luna_site",
+  "version": "0.1.0",
+  "description": "A LUNA application",
+  "platform": {
+    "backend": true,
+    "web": true
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "scripts": {
+    "dev": "luna dev",
+    "start": "luna start",
+    "build": "luna build",
+    "test": "luna test"
+  }
+}
