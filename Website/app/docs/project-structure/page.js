@@ -1,0 +1,572 @@
+/**
+ * Project Structure & Organization  —  app/docs/project-structure/page.js  →  /docs/project-structure
+ *
+ * Modelled after the Next.js project-structure docs layout:
+ *   • Folder & File Conventions  (top-level folders, top-level files, routing files,
+ *     nested routes, dynamic routes, route groups & private folders, metadata files)
+ *   • Organizing Your Project  (component hierarchy, colocation, private folders, route groups, src folder)
+ *   • Examples  (project files outside app, inside app, split by feature, route groups for layout)
+ */
+const { docsSidebar } = require('../page');
+
+/* ─── tiny helper to avoid repeating table markup ─── */
+function tbl(headers, rows) {
+    return {
+        tag: 'table',
+        props: { className: 'docs-table' },
+        children: [
+            {
+                tag: 'thead', props: {}, children: [
+                    { tag: 'tr', props: {}, children: headers.map(h => ({ tag: 'th', props: {}, children: [h] })) }
+                ]
+            },
+            {
+                tag: 'tbody', props: {}, children: rows.map(cells => ({
+                    tag: 'tr', props: {}, children: cells.map(c => {
+                        // If the cell is already an object (VDOM node), wrap it; otherwise treat as text
+                        if (typeof c === 'object' && c !== null && c.tag) {
+                            return { tag: 'td', props: {}, children: [c] };
+                        }
+                        return { tag: 'td', props: {}, children: [c] };
+                    })
+                }))
+            }
+        ]
+    };
+}
+function code(t) { return { tag: 'code', props: {}, children: [t] }; }
+function link(href, label) { return { tag: 'a', props: { href }, children: [label] }; }
+
+module.exports = function ProjectStructurePage() {
+    return {
+        tag: 'div',
+        props: { className: 'docs-layout' },
+        children: [
+            docsSidebar(),
+            {
+                tag: 'div',
+                props: { className: 'docs-content' },
+                children: [
+
+                    /* ════════════════════════════════════════════════
+                       TITLE
+                       ════════════════════════════════════════════════ */
+                    { tag: 'h1', props: {}, children: ['Project Structure and Organization'] },
+                    {
+                        tag: 'p', props: { className: 'docs-lead' }, children: [
+                            'This page provides an overview of all the folder and file conventions in LUNA, and recommendations for organizing your project.'
+                        ]
+                    },
+
+                    /* ════════════════════════════════════════════════
+                       § FOLDER AND FILE CONVENTIONS
+                       ════════════════════════════════════════════════ */
+                    { tag: 'h2', props: { id: 'folder-and-file-conventions' }, children: ['Folder and File Conventions'] },
+
+                    /* ── Top-level folders ── */
+                    { tag: 'h3', props: { id: 'top-level-folders' }, children: ['Top-level Folders'] },
+                    {
+                        tag: 'p', props: {}, children: [
+                            'Top-level folders are used to organize your application\'s code and static assets.'
+                        ]
+                    },
+                    tbl(
+                        ['', 'Description'],
+                        [
+                            [code('app'), 'App Router — file-based routing, layouts, pages, API routes'],
+                            [code('components'), 'Reusable UI components'],
+                            [code('lib'), 'Shared utility functions and helpers'],
+                            [code('public'), 'Static assets served at the root URL (images, fonts, etc.)'],
+                            [code('src'), 'Optional application source folder']
+                        ]
+                    ),
+
+                    /* ── Top-level files ── */
+                    { tag: 'h3', props: { id: 'top-level-files' }, children: ['Top-level Files'] },
+                    {
+                        tag: 'p', props: {}, children: [
+                            'Top-level files are used to configure your application, manage dependencies, and define environment settings.'
+                        ]
+                    },
+                    { tag: 'h4', props: {}, children: ['LUNA'] },
+                    tbl(
+                        ['File', 'Description'],
+                        [
+                            [code('luna.json'), 'Project manifest — name, version, platform targets, dependencies, scripts'],
+                            [code('luna.config.js'), 'Runtime & build configuration for LUNA'],
+                            [code('luna-lock.json'), 'Dependency lockfile generated by LPM (auto-generated, do not edit)']
+                        ]
+                    ),
+                    { tag: 'h4', props: {}, children: ['Ecosystem'] },
+                    tbl(
+                        ['File', 'Description'],
+                        [
+                            [code('package.json'), 'Project dependencies and scripts (npm compatibility)'],
+                            [code('.env'), 'Environment variables'],
+                            [code('.env.local'), 'Local environment overrides (not tracked by git)'],
+                            [code('.env.production'), 'Production environment variables'],
+                            [code('.env.development'), 'Development environment variables'],
+                            [code('.gitignore'), 'Files and folders to ignore in Git']
+                        ]
+                    ),
+
+                    /* ── Routing files ── */
+                    { tag: 'h3', props: { id: 'routing-files' }, children: ['Routing Files'] },
+                    {
+                        tag: 'p', props: {}, children: [
+                            'Add ', code('page'), ' to expose a route, ', code('layout'), ' for shared UI such as header, nav, or footer, ',
+                            code('loading'), ' for skeletons, ', code('error'), ' for error boundaries, and ', code('route'), ' for APIs.'
+                        ]
+                    },
+                    tbl(
+                        ['File', 'Extension', 'Purpose'],
+                        [
+                            [code('layout'), '.js', 'Layout — wraps child routes in shared UI'],
+                            [code('page'), '.js', 'Page — unique UI for a route, makes the route publicly accessible'],
+                            [code('loading'), '.js', 'Loading UI — suspense boundary shown while the page is loading'],
+                            [code('not-found'), '.js', 'Not Found UI — rendered when no route matches (404)'],
+                            [code('error'), '.js', 'Error UI — error boundary that catches rendering errors'],
+                            [code('global-error'), '.js', 'Global Error UI — top-level error boundary'],
+                            [code('route'), '.js', 'API Endpoint — server-side request handler (GET, POST, etc.)'],
+                            [code('template'), '.js', 'Re-rendered layout — does not preserve state across navigations'],
+                            [code('default'), '.js', 'Parallel route fallback page'],
+                            [code('globals.css'), '.css', 'Global stylesheet — automatically included in every page']
+                        ]
+                    ),
+
+                    /* ── Nested routes ── */
+                    { tag: 'h3', props: { id: 'nested-routes' }, children: ['Nested Routes'] },
+                    {
+                        tag: 'p', props: {}, children: [
+                            'Folders define URL segments. Nesting folders nests segments. Layouts at any level wrap their child segments. A route becomes public when a ',
+                            code('page.js'), ' or ', code('route.js'), ' file is added to a route segment.'
+                        ]
+                    },
+                    tbl(
+                        ['Path', 'URL', 'Description'],
+                        [
+                            [code('app/layout.js'), '—', 'Root layout wraps all routes'],
+                            [code('app/blog/layout.js'), '—', 'Wraps /blog and descendants'],
+                            [code('app/page.js'), '/', 'Public route'],
+                            [code('app/blog/page.js'), '/blog', 'Public route'],
+                            [code('app/blog/authors/page.js'), '/blog/authors', 'Public route'],
+                            [code('app/api/hello/route.js'), '/api/hello', 'API endpoint']
+                        ]
+                    ),
+
+                    /* ── Dynamic routes ── */
+                    { tag: 'h3', props: { id: 'dynamic-routes' }, children: ['Dynamic Routes'] },
+                    {
+                        tag: 'p', props: {}, children: [
+                            'Parameterize segments with square brackets. Use ', code('[segment]'), ' for a single param, ',
+                            code('[...segment]'), ' for catch-all, and ', code('[[...segment]]'), ' for optional catch-all. Access values via the ',
+                            code('params'), ' prop.'
+                        ]
+                    },
+                    tbl(
+                        ['Convention', 'Example URL'],
+                        [
+                            [code('app/blog/[slug]/page.js'), '/blog/my-first-post'],
+                            [code('app/shop/[...slug]/page.js'), '/shop/clothing, /shop/clothing/shirts'],
+                            [code('app/docs/[[...slug]]/page.js'), '/docs, /docs/layouts, /docs/api/use-router']
+                        ]
+                    ),
+
+                    /* ── Route groups & private folders ── */
+                    { tag: 'h3', props: { id: 'route-groups-and-private-folders' }, children: ['Route Groups and Private Folders'] },
+                    {
+                        tag: 'p', props: {}, children: [
+                            'Organize code without changing URLs with route groups ',
+                            code('(group)'),
+                            ', and colocate non-routable files with private folders ',
+                            code('_folder'),
+                            '.'
+                        ]
+                    },
+                    tbl(
+                        ['Convention', 'URL', 'Description'],
+                        [
+                            [code('app/(marketing)/page.js'), '/', 'Group omitted from URL'],
+                            [code('app/(shop)/cart/page.js'), '/cart', 'Share layouts within (shop)'],
+                            [code('app/blog/_components/Post.js'), '—', 'Not routable; safe place for UI utilities'],
+                            [code('app/blog/_lib/data.js'), '—', 'Not routable; safe place for helpers']
+                        ]
+                    ),
+
+                    /* ── Parallel & Intercepted routes ── */
+                    { tag: 'h3', props: { id: 'parallel-and-intercepted-routes' }, children: ['Parallel and Intercepted Routes'] },
+                    {
+                        tag: 'p', props: {}, children: [
+                            'These features fit specific UI patterns such as slot-based layouts or modal routing.'
+                        ]
+                    },
+                    {
+                        tag: 'p', props: {}, children: [
+                            'Use ', code('@slot'), ' for named slots rendered by a parent layout. Use intercept patterns to render another route inside the current layout without changing the URL — for example, to show a details view as a modal over a list.'
+                        ]
+                    },
+                    tbl(
+                        ['Convention', 'Description', 'Example'],
+                        [
+                            [code('@folder'), 'Named slot', 'Sidebar + main content'],
+                            [code('(.)folder'), 'Intercept same level', 'Preview sibling route in a modal'],
+                            [code('(..)folder'), 'Intercept parent', 'Open a child of the parent as an overlay'],
+                            [code('(..)(..)folder'), 'Intercept two levels', 'Deeply nested overlay'],
+                            [code('(...)folder'), 'Intercept from root', 'Show arbitrary route in current view']
+                        ]
+                    ),
+
+                    /* ── Metadata file conventions ── */
+                    { tag: 'h3', props: { id: 'metadata-file-conventions' }, children: ['Metadata File Conventions'] },
+
+                    { tag: 'h4', props: {}, children: ['App Icons'] },
+                    tbl(
+                        ['File', 'Extension', 'Description'],
+                        [
+                            [code('favicon'), '.ico', 'Favicon file'],
+                            [code('icon'), '.ico .jpg .png .svg', 'App icon file'],
+                            [code('icon'), '.js', 'Generated app icon'],
+                            [code('apple-icon'), '.jpg .png', 'Apple app icon file']
+                        ]
+                    ),
+
+                    { tag: 'h4', props: {}, children: ['Open Graph and Social Images'] },
+                    tbl(
+                        ['File', 'Extension', 'Description'],
+                        [
+                            [code('opengraph-image'), '.jpg .png .gif', 'Open Graph image file'],
+                            [code('opengraph-image'), '.js', 'Generated Open Graph image'],
+                            [code('twitter-image'), '.jpg .png .gif', 'Twitter / X image file'],
+                            [code('twitter-image'), '.js', 'Generated Twitter / X image']
+                        ]
+                    ),
+
+                    { tag: 'h4', props: {}, children: ['SEO'] },
+                    tbl(
+                        ['File', 'Extension', 'Description'],
+                        [
+                            [code('sitemap'), '.xml', 'Sitemap file'],
+                            [code('sitemap'), '.js', 'Generated sitemap'],
+                            [code('robots'), '.txt', 'Robots file'],
+                            [code('robots'), '.js', 'Generated robots file']
+                        ]
+                    ),
+
+                    /* ════════════════════════════════════════════════
+                       § ORGANIZING YOUR PROJECT
+                       ════════════════════════════════════════════════ */
+                    { tag: 'h2', props: { id: 'organizing-your-project' }, children: ['Organizing Your Project'] },
+                    {
+                        tag: 'p', props: {}, children: [
+                            'LUNA is unopinionated about how you organize and colocate your project files. But it provides several features to help you organize your project.'
+                        ]
+                    },
+
+                    /* ── Component hierarchy ── */
+                    { tag: 'h3', props: { id: 'component-hierarchy' }, children: ['Component Hierarchy'] },
+                    {
+                        tag: 'p', props: {}, children: [
+                            'The components defined in special files are rendered in a specific hierarchy:'
+                        ]
+                    },
+                    {
+                        tag: 'ol', props: {}, children: [
+                            { tag: 'li', props: {}, children: [code('layout.js')] },
+                            { tag: 'li', props: {}, children: [code('template.js')] },
+                            { tag: 'li', props: {}, children: [code('error.js'), ' (error boundary)'] },
+                            { tag: 'li', props: {}, children: [code('loading.js'), ' (suspense boundary)'] },
+                            { tag: 'li', props: {}, children: [code('not-found.js'), ' (not-found boundary)'] },
+                            { tag: 'li', props: {}, children: [code('page.js'), ' or nested ', code('layout.js')] }
+                        ]
+                    },
+                    {
+                        tag: 'p', props: {}, children: [
+                            'The components are rendered recursively in nested routes, meaning the components of a route segment will be nested inside the components of its parent segment.'
+                        ]
+                    },
+                    {
+                        tag: 'div',
+                        props: { className: 'hero-code docs-code' },
+                        children: [
+                            {
+                                tag: 'pre', props: { className: 'code-block' }, children: [
+                                    { tag: 'code', props: {}, children: ["<Layout>               ← app/layout.js\n  <Template>           ← app/template.js (optional)\n    <ErrorBoundary>    ← app/error.js\n      <Suspense>       ← app/loading.js\n        <NotFound>     ← app/not-found.js\n          <Page />     ← app/page.js\n        </NotFound>\n      </Suspense>\n    </ErrorBoundary>\n  </Template>\n</Layout>"] }
+                                ]
+                            }
+                        ]
+                    },
+
+                    /* ── Colocation ── */
+                    { tag: 'h3', props: { id: 'colocation' }, children: ['Colocation'] },
+                    {
+                        tag: 'p', props: {}, children: [
+                            'In the ', code('app'), ' directory, nested folders define route structure. Each folder represents a route segment that is mapped to a corresponding segment in a URL path.'
+                        ]
+                    },
+                    {
+                        tag: 'p', props: {}, children: [
+                            'However, even though route structure is defined through folders, a route is ', { tag: 'strong', props: {}, children: ['not publicly accessible'] },
+                            ' until a ', code('page.js'), ' or ', code('route.js'), ' file is added to a route segment.'
+                        ]
+                    },
+                    {
+                        tag: 'p', props: {}, children: [
+                            'And even when a route is made publicly accessible, only the content returned by ', code('page.js'), ' or ', code('route.js'), ' is sent to the client.'
+                        ]
+                    },
+                    {
+                        tag: 'p', props: {}, children: [
+                            'This means that project files can be safely colocated inside route segments in the ', code('app'),
+                            ' directory without accidentally being routable.'
+                        ]
+                    },
+                    {
+                        tag: 'div',
+                        props: { className: 'hero-code docs-code' },
+                        children: [
+                            {
+                                tag: 'pre', props: { className: 'code-block' }, children: [
+                                    { tag: 'code', props: {}, children: ["app/\n├── dashboard/\n│   ├── _components/     ← Private folder, not routable\n│   │   ├── Chart.js\n│   │   └── Sidebar.js\n│   ├── _lib/            ← Private folder, not routable\n│   │   └── analytics.js\n│   ├── layout.js\n│   └── page.js          ← Only this is publicly accessible\n└── page.js"] }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        tag: 'div',
+                        props: { className: 'docs-note' },
+                        children: [
+                            {
+                                tag: 'p', props: {}, children: [
+                                    { tag: 'strong', props: {}, children: ['Good to know:'] },
+                                    ' While you can colocate your project files in ', code('app'),
+                                    ', you don\'t have to. If you prefer, you can keep them outside the ', code('app'), ' directory.'
+                                ]
+                            }
+                        ]
+                    },
+
+                    /* ── Private folders ── */
+                    { tag: 'h3', props: { id: 'private-folders' }, children: ['Private Folders'] },
+                    {
+                        tag: 'p', props: {}, children: [
+                            'Private folders can be created by prefixing a folder with an underscore: ', code('_folderName')
+                        ]
+                    },
+                    {
+                        tag: 'p', props: {}, children: [
+                            'This indicates the folder is a private implementation detail and should not be considered by the routing system, thereby opting the folder and all its subfolders out of routing.'
+                        ]
+                    },
+                    { tag: 'p', props: {}, children: ['Private folders are useful for:'] },
+                    {
+                        tag: 'ul', props: {}, children: [
+                            { tag: 'li', props: {}, children: ['Separating UI logic from routing logic'] },
+                            { tag: 'li', props: {}, children: ['Consistently organizing internal files across a project'] },
+                            { tag: 'li', props: {}, children: ['Sorting and grouping files in code editors'] },
+                            { tag: 'li', props: {}, children: ['Avoiding potential naming conflicts with future LUNA file conventions'] }
+                        ]
+                    },
+
+                    /* ── Route groups ── */
+                    { tag: 'h3', props: { id: 'route-groups' }, children: ['Route Groups'] },
+                    {
+                        tag: 'p', props: {}, children: [
+                            'Route groups can be created by wrapping a folder in parentheses: ', code('(folderName)')
+                        ]
+                    },
+                    {
+                        tag: 'p', props: {}, children: [
+                            'This indicates the folder is for organizational purposes and should ', { tag: 'strong', props: {}, children: ['not'] },
+                            ' be included in the route\'s URL path.'
+                        ]
+                    },
+                    { tag: 'p', props: {}, children: ['Route groups are useful for:'] },
+                    {
+                        tag: 'ul', props: {}, children: [
+                            { tag: 'li', props: {}, children: ['Organizing routes by site section, intent, or team — e.g. marketing pages, admin pages'] },
+                            { tag: 'li', props: {}, children: ['Enabling nested layouts at the same route segment level'] },
+                            { tag: 'li', props: {}, children: ['Creating multiple root layouts in the same segment'] },
+                            { tag: 'li', props: {}, children: ['Adding a layout to a subset of routes in a common segment'] }
+                        ]
+                    },
+
+                    /* ── src folder ── */
+                    { tag: 'h3', props: { id: 'src-folder' }, children: ['src Folder'] },
+                    {
+                        tag: 'p', props: {}, children: [
+                            'LUNA supports storing application code (including ', code('app'), ') inside an optional ',
+                            code('src'), ' folder. This separates application code from project configuration files which mostly live in the root of a project.'
+                        ]
+                    },
+                    {
+                        tag: 'div',
+                        props: { className: 'hero-code docs-code' },
+                        children: [
+                            {
+                                tag: 'pre', props: { className: 'code-block' }, children: [
+                                    { tag: 'code', props: {}, children: ["my-app/\n├── src/\n│   ├── app/              ← Routing lives here now\n│   │   ├── page.js\n│   │   └── layout.js\n│   ├── components/\n│   └── lib/\n├── public/\n├── luna.json\n└── luna.config.js"] }
+                                ]
+                            }
+                        ]
+                    },
+
+                    /* ════════════════════════════════════════════════
+                       § EXAMPLES
+                       ════════════════════════════════════════════════ */
+                    { tag: 'h2', props: { id: 'examples' }, children: ['Examples'] },
+                    {
+                        tag: 'p', props: {}, children: [
+                            'The following section lists common strategies for organizing a LUNA project. The simplest takeaway is to choose a strategy that works for you and your team and be consistent across the project.'
+                        ]
+                    },
+                    {
+                        tag: 'div',
+                        props: { className: 'docs-note' },
+                        children: [
+                            {
+                                tag: 'p', props: {}, children: [
+                                    { tag: 'strong', props: {}, children: ['Good to know:'] },
+                                    ' In the examples below, we use ', code('components'), ' and ', code('lib'),
+                                    ' folders as generalized placeholders. Their naming has no special framework significance — your projects might use other folders like ',
+                                    code('ui'), ', ', code('utils'), ', ', code('hooks'), ', ', code('styles'), ', etc.'
+                                ]
+                            }
+                        ]
+                    },
+
+                    /* ── Example 1: outside app ── */
+                    { tag: 'h3', props: { id: 'project-files-outside-app' }, children: ['Store Project Files Outside of app'] },
+                    {
+                        tag: 'p', props: {}, children: [
+                            'This strategy stores all application code in shared folders in the root of your project and keeps the ',
+                            code('app'), ' directory purely for routing purposes.'
+                        ]
+                    },
+                    {
+                        tag: 'div',
+                        props: { className: 'hero-code docs-code' },
+                        children: [
+                            {
+                                tag: 'pre', props: { className: 'code-block' }, children: [
+                                    { tag: 'code', props: {}, children: ["my-app/\n├── app/\n│   ├── page.js\n│   ├── about/page.js\n│   └── api/hello/route.js\n├── components/\n│   ├── Button.js\n│   └── Card.js\n├── lib/\n│   └── utils.js\n├── luna.json\n└── luna.config.js"] }
+                                ]
+                            }
+                        ]
+                    },
+
+                    /* ── Example 2: inside app ── */
+                    { tag: 'h3', props: { id: 'project-files-inside-app' }, children: ['Store Project Files in Top-level Folders Inside app'] },
+                    {
+                        tag: 'p', props: {}, children: [
+                            'This strategy stores all application code in shared folders in the root of the ', code('app'), ' directory.'
+                        ]
+                    },
+                    {
+                        tag: 'div',
+                        props: { className: 'hero-code docs-code' },
+                        children: [
+                            {
+                                tag: 'pre', props: { className: 'code-block' }, children: [
+                                    { tag: 'code', props: {}, children: ["my-app/\n├── app/\n│   ├── _components/\n│   │   ├── Button.js\n│   │   └── Card.js\n│   ├── _lib/\n│   │   └── utils.js\n│   ├── page.js\n│   ├── about/page.js\n│   └── api/hello/route.js\n├── luna.json\n└── luna.config.js"] }
+                                ]
+                            }
+                        ]
+                    },
+
+                    /* ── Example 3: split by feature ── */
+                    { tag: 'h3', props: { id: 'split-by-feature' }, children: ['Split Project Files by Feature or Route'] },
+                    {
+                        tag: 'p', props: {}, children: [
+                            'This strategy stores globally shared application code in the root ', code('app'),
+                            ' directory and splits more specific application code into the route segments that use them.'
+                        ]
+                    },
+                    {
+                        tag: 'div',
+                        props: { className: 'hero-code docs-code' },
+                        children: [
+                            {
+                                tag: 'pre', props: { className: 'code-block' }, children: [
+                                    { tag: 'code', props: {}, children: ["my-app/\n├── app/\n│   ├── _components/         ← Shared components\n│   │   └── Button.js\n│   ├── dashboard/\n│   │   ├── _components/     ← Dashboard-specific\n│   │   │   ├── Chart.js\n│   │   │   └── Metrics.js\n│   │   └── page.js\n│   ├── blog/\n│   │   ├── _components/     ← Blog-specific\n│   │   │   └── PostCard.js\n│   │   └── page.js\n│   └── page.js\n├── luna.json\n└── luna.config.js"] }
+                                ]
+                            }
+                        ]
+                    },
+
+                    /* ── Example 4: route groups for layouts ── */
+                    { tag: 'h3', props: { id: 'route-groups-for-layouts' }, children: ['Organize Routes Without Affecting the URL Path'] },
+                    {
+                        tag: 'p', props: {}, children: [
+                            'To organize routes without affecting the URL, create a group to keep related routes together. The folders in parentheses will be omitted from the URL (e.g. ',
+                            code('(marketing)'), ' or ', code('(shop)'), ').'
+                        ]
+                    },
+                    {
+                        tag: 'div',
+                        props: { className: 'hero-code docs-code' },
+                        children: [
+                            {
+                                tag: 'pre', props: { className: 'code-block' }, children: [
+                                    { tag: 'code', props: {}, children: ["app/\n├── (marketing)/\n│   ├── layout.js        ← Marketing layout\n│   ├── page.js           →  /\n│   └── about/page.js     →  /about\n├── (shop)/\n│   ├── layout.js        ← Shop layout\n│   ├── cart/page.js      →  /cart\n│   └── checkout/page.js  →  /checkout\n└── layout.js             ← Root layout"] }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        tag: 'p', props: {}, children: [
+                            'Even though routes inside ', code('(marketing)'), ' and ', code('(shop)'),
+                            ' share the same URL hierarchy, you can create a different layout for each group by adding a ',
+                            code('layout.js'), ' file inside their folders.'
+                        ]
+                    },
+
+                    /* ── Example 5: multiple root layouts ── */
+                    { tag: 'h3', props: { id: 'multiple-root-layouts' }, children: ['Creating Multiple Root Layouts'] },
+                    {
+                        tag: 'p', props: {}, children: [
+                            'To create multiple root layouts, remove the top-level ', code('layout.js'),
+                            ' file, and add a ', code('layout.js'), ' file inside each route group. This is useful for partitioning an application into sections that have a completely different UI or experience.'
+                        ]
+                    },
+                    {
+                        tag: 'div',
+                        props: { className: 'hero-code docs-code' },
+                        children: [
+                            {
+                                tag: 'pre', props: { className: 'code-block' }, children: [
+                                    { tag: 'code', props: {}, children: ["app/\n├── (marketing)/\n│   ├── layout.js        ← Root layout for marketing\n│   └── page.js\n├── (app)/\n│   ├── layout.js        ← Root layout for the app\n│   ├── dashboard/page.js\n│   └── settings/page.js\n└── api/\n    └── hello/route.js"] }
+                                ]
+                            }
+                        ]
+                    },
+
+                    /* ── Example 6: loading skeletons ── */
+                    { tag: 'h3', props: { id: 'loading-skeleton-for-specific-route' }, children: ['Opting for Loading Skeletons on a Specific Route'] },
+                    {
+                        tag: 'p', props: {}, children: [
+                            'To apply a loading skeleton via a ', code('loading.js'), ' file to a specific route, create a new route group (e.g., ',
+                            code('/(overview)'), ') and then move your ', code('loading.js'), ' inside that route group.'
+                        ]
+                    },
+                    {
+                        tag: 'div',
+                        props: { className: 'hero-code docs-code' },
+                        children: [
+                            {
+                                tag: 'pre', props: { className: 'code-block' }, children: [
+                                    { tag: 'code', props: {}, children: ["app/dashboard/\n├── (overview)/\n│   ├── loading.js       ← Only applies to the overview page\n│   └── page.js\n├── settings/page.js     ← No loading skeleton here\n└── layout.js"] }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        tag: 'p', props: {}, children: [
+                            'Now the ', code('loading.js'), ' file will only apply to your dashboard overview page instead of all your dashboard pages — without affecting the URL path structure.'
+                        ]
+                    }
+
+                ]
+            }
+        ]
+    };
+};
