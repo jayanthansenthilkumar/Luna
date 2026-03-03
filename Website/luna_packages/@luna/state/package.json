@@ -1,0 +1,7 @@
+{
+  "name": "@luna/state",
+  "version": "0.1.0",
+  "description": "LUNA reactive state — Signals, Computed, Effects, and Stores with time-travel",
+  "main": "index.js",
+  "luna": true
+}

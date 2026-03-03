@@ -1,0 +1,7 @@
+{
+  "name": "@luna/router",
+  "version": "0.1.0",
+  "description": "LUNA file-based router — app router, page router, API routes",
+  "main": "index.js",
+  "luna": true
+}

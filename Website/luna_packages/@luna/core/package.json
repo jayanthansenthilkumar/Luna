@@ -1,0 +1,7 @@
+{
+  "name": "@luna/core",
+  "version": "0.1.0",
+  "description": "LUNA core runtime - engine, scheduler, sandbox, and system API",
+  "main": "index.js",
+  "luna": true
+}

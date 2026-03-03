@@ -1,0 +1,7 @@
+{
+  "name": "@luna/qsr",
+  "version": "0.1.0",
+  "description": "LUNA Quantum State Reconciliation — distributed state with probabilistic conflict resolution",
+  "main": "index.js",
+  "luna": true
+}

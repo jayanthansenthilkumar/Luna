@@ -1,0 +1,7 @@
+{
+  "name": "@luna/ucc",
+  "version": "0.1.0",
+  "description": "LUNA Universal Code Continuity — write once, run anywhere with state transfer",
+  "main": "index.js",
+  "luna": true
+}

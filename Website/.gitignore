@@ -1,6 +1,5 @@
 # Dependencies
 node_modules/
-luna_packages/
 
 # Build output
 dist/

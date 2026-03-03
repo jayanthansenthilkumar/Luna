@@ -1,13 +1,23 @@
 {
   "name": "luna_site",
   "version": "0.1.0",
-  "description": "A LUNA application",
+  "description": "Official LUNA framework website and documentation",
   "platform": {
     "backend": true,
     "web": true
   },
-  "dependencies": {},
-  "devDependencies": {},
+  "dependencies": {
+    "@luna/core": "^0.1.0",
+    "@luna/router": "^0.1.0",
+    "@luna/renderer": "^0.1.0",
+    "@luna/net": "^0.1.0",
+    "@luna/state": "^0.1.0"
+  },
+  "devDependencies": {
+    "@luna/qsr": "^0.1.0",
+    "@luna/ucc": "^0.1.0",
+    "@luna/optimizer": "^0.1.0"
+  },
   "scripts": {
     "dev": "luna dev",
     "start": "luna start",

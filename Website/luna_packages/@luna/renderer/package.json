@@ -1,0 +1,7 @@
+{
+  "name": "@luna/renderer",
+  "version": "0.1.0",
+  "description": "LUNA rendering engine - Virtual DOM, SSR, hydration strategies",
+  "main": "index.js",
+  "luna": true
+}

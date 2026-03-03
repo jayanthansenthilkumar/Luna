@@ -1,0 +1,7 @@
+{
+  "name": "@luna/optimizer",
+  "version": "0.1.0",
+  "description": "LUNA Self-Evolving Optimizer — runtime profiling and automatic optimization",
+  "main": "index.js",
+  "luna": true
+}

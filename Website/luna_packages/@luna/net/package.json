@@ -1,0 +1,7 @@
+{
+  "name": "@luna/net",
+  "version": "0.1.0",
+  "description": "LUNA networking — HTTP server, middleware, WebSocket, streaming",
+  "main": "index.js",
+  "luna": true
+}
